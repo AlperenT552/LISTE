@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liste Uygulaması</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #1e1e1e;
+            color: #f1f1f1;
+        }
+        .container {
+            width: 90%;
+            max-width: 400px;
+            padding: 20px;
+            background: #333;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #f1f1f1;
+        }
+        input[type="text"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #555;
+            border-radius: 4px;
+            background-color: #444;
+            color: #f1f1f1;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            border: none;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 5px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        ul li {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            border-bottom: 1px solid #555;
+            cursor: pointer;
+        }
+        ul li.completed {
+            text-decoration: line-through;
+            color: #888;
+        }
+        .clear-btn {
+            background-color: #dc3545;
+            margin-top: 10px;
+        }
+        .clear-btn:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Liste Uygulaması</h2>
+        <input type="text" id="itemInput" placeholder="Listeye ekle...">
+        <button onclick="addItem()">Ekle</button>
+        <ul id="itemList"></ul>
+        <button class="clear-btn" onclick="clearList()">Listeyi Temizle</button>
+    </div>
+
+    <script>
+        // LocalStorage'dan listeyi yükle
+        function loadList() {
+            const storedItems = JSON.parse(localStorage.getItem("todoList")) || [];
+            storedItems.forEach(item => {
+                const li = createListItem(item.text, item.completed);
+                document.getElementById("itemList").appendChild(li);
+            });
+        }
+
+        // Yeni bir liste öğesi oluşturma fonksiyonu
+        function createListItem(text, completed = false) {
+            const li = document.createElement("li");
+            li.textContent = text;
+            if (completed) li.classList.add("completed");
+            li.onclick = function() {
+                this.classList.toggle("completed");
+                saveList(); // Her tıklamada güncellemeyi kaydet
+            };
+            return li;
+        }
+
+        // Listeye eleman ekle ve kaydet
+        function addItem() {
+            const itemInput = document.getElementById("itemInput");
+            const itemText = itemInput.value.trim();
+            if (itemText === "") {
+                alert("Boş bir eleman ekleyemezsiniz!");
+                return;
+            }
+
+            const li = createListItem(itemText);
+            document.getElementById("itemList").appendChild(li);
+            itemInput.value = "";
+
+            saveList(); // Eklendiğinde kaydet
+        }
+
+        // Listeyi LocalStorage'a kaydet
+        function saveList() {
+            const items = [];
+            document.querySelectorAll("#itemList li").forEach(li => {
+                items.push({
+                    text: li.textContent,
+                    completed: li.classList.contains("completed")
+                });
+            });
+            localStorage.setItem("todoList", JSON.stringify(items));
+        }
+
+        // Listeyi temizle ve kaydı sil
+        function clearList() {
+            document.getElementById("itemList").innerHTML = "";
+            localStorage.removeItem("todoList");
+        }
+
+        // Sayfa yüklendiğinde listeyi yükle
+        window.onload = loadList;
+    </script>
+</body>
+</html>
