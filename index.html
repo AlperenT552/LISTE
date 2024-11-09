@@ -62,6 +62,7 @@
             padding: 10px;
             border-bottom: 1px solid #555;
             cursor: pointer;
+            user-select: none;
         }
         ul li.completed {
             text-decoration: line-through;
@@ -100,10 +101,22 @@
             const li = document.createElement("li");
             li.textContent = text;
             if (completed) li.classList.add("completed");
+
+            // Öğeye tıklanınca çizili yap
             li.onclick = function() {
                 this.classList.toggle("completed");
-                saveList(); // Her tıklamada güncellemeyi kaydet
+                saveList(); // Güncellemeyi kaydet
             };
+
+            // Uzun basıldığında öğeyi sil
+            li.oncontextmenu = function(e) {
+                e.preventDefault(); // Sağ tıklama menüsünü engelle
+                if (confirm("Bu öğeyi silmek istiyor musunuz?")) {
+                    li.remove();
+                    saveList(); // Öğeyi sildikten sonra kaydet
+                }
+            };
+
             return li;
         }
 
